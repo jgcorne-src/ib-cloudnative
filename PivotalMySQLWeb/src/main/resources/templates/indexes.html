@@ -1,0 +1,536 @@
+<!--
+PivotalMySQLWeb
+
+Copyright (c) 2017-Present Pivotal Software, Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Pivotal MySQL*Web - Indexes</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" th:href="@{'themes/' + ${session.themeMain}}" media="screen" />
+    <link rel="stylesheet" th:href="@{'themes/' + ${session.themeMin}}" />
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>
+
+    <link href="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
+    <script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+    <script th:src="@{js/functions.js}" type="text/javascript"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#datatable-mysql').DataTable();
+        } );
+    </script>
+
+    <script type="text/javascript">
+        // <![CDATA[
+
+        // js form validation stuff
+        var confirmMsg  = 'Do you really want to ';
+        // ]]>
+    </script>
+
+    <style>
+        .navbar-brand
+        {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            margin: auto;
+            margin-left: 48%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-brand navbar-left">
+                <a href="#">
+                    <img src="images/PVLG-PivotalMYSQLWeb-SM.png"
+                         th:src="@{images/PVLG-PivotalMYSQLWeb-SM.png}"
+                         alt="Brand" />
+                </a>
+            </div>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right nav-pills">
+                <li>
+                    <a th:href="@{/home}">
+                        <img src="images/b_home.png"
+                             th:src="@{images/b_home.png}"
+                             alt="Home"
+                             border="0"/>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/exit}">
+                        <img src="images/s_loggoff.png"
+                             th:src="@{images/s_loggoff.png}"
+                             alt="Logout"
+                             border="0"/>
+                        Logout
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Menu <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a th:href="@{/prefs}">
+                                <img src="images/b_props.png"
+                                     th:src="@{images/b_props.png}"
+                                     alt="Preferences"
+                                     border="0"/>
+                                Preferences
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/endpoints}">
+                                <img src="images/s_notice.png"
+                                     th:src="@{images/s_notice.png}"
+                                     alt="Endpoints"
+                                     border="0"/>
+                                Heath Endpoints
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://docs.pivotal.io/p-mysql/1-7/" target="_new">
+                                <img src="images/b_docs.png"
+                                     th:src="@{images/b_docs.png}"
+                                     alt="p-mysql docs"
+                                     border="0"/>
+                                p-mysql Doc
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a th:href="@{/refresh}">
+                                <img src="images/eye.png"
+                                     th:src="@{images/eye.png}"
+                                     alt="Refresh"
+                                     border="0"/>
+                                Refresh
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Schema Objects <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a th:href="@{/tables}">
+                                <img src="images/s_tbl.png"
+                                     th:src="@{images/s_tbl.png}"
+                                     alt="Tables"
+                                     border="0"/>
+                                Tables[<span th:text="${session.schemaMap.Table}" />]
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/views}">
+                                <img src="images/b_views.png"
+                                     th:src="@{images/b_views.png}"
+                                     alt="Views"
+                                     border="0"/>
+                                Views[<span th:text="${session.schemaMap.View}" />]
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/indexes}">
+                                <img src="images/b_index.png"
+                                     th:src="@{images/b_index.png}"
+                                     alt="Indexes"
+                                     border="0"/>
+                                Indexes[<span th:text="${session.schemaMap.Index}" />]
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/constraints}">
+                                <img src="images/constraints.png"
+                                     th:src="@{images/constraints.png}"
+                                     alt="Constraints"
+                                     border="0"/>
+                                Constraints[<span th:text="${session.schemaMap.Constraint}" />]
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a th:href="@{/query}">
+                                <img src="images/b_sql.png"
+                                     th:src="@{images/b_sql.png}"
+                                     alt="SQL Worksheet"
+                                     border="0"/>
+                                SQL Worksheet
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Themes <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a th:href="@{/selecttheme(theme='default')}">Default</a></li>
+                        <li><a th:href="@{/selecttheme(theme='sandstone')}">Sandstone</a></li>
+                        <li><a th:href="@{/selecttheme(theme='cyborg')}">Cyborg</a></li>
+                        <li><a th:href="@{/selecttheme(theme='slate')}">Slate</a></li>
+                        <li><a th:href="@{/selecttheme(theme='spacelab')}">Spacelab</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown" th:if="${session.servicesListSize > 0}">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Instances <b class="caret"></b></a>
+                    <ul class="dropdown-menu" style="min-width: 300px;">
+                        <div th:each="service : ${session.servicesList}">
+                            <li><a th:href="@{/switchinstance(instanceType=${service.type},instanceName=${service.name})}">Switch to <span th:text="${service.name}" /></a></li>
+                        </div>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="images/b_usrlist.png"
+                             th:src="@{images/b_usrlist.png}"
+                             alt="Users"
+                             border="0"/>
+                        [User: <span th:text="${session.user} ? ${session.user} : 'Not Logged In'">Not Logged In</span>]
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+<!-- NAVBAR CODE END -->
+
+<div class="bs-example">
+    <div class="page-header">
+        <h1>Pivotal MySQL*Web - <small>Indexes</small></h1>
+    </div>
+</div>
+
+<ul class="nav nav-tabs">
+    <li>
+        <a th:href="@{/home}">
+            <img src="images/b_home.png"
+                 th:src="@{images/b_home.png}"
+                 alt="Home"
+                 border="0"/>
+            Home
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/tables}">
+            <img src="images/s_tbl.png"
+                 th:src="@{images/s_tbl.png}"
+                 alt="Tables"
+                 border="0"/>
+            Tables[<span th:text="${session.schemaMap.Table}" />]
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/views}">
+            <img src="images/b_views.png"
+                 th:src="@{images/b_views.png}"
+                 alt="Views"
+                 border="0"/>
+            Views[<span th:text="${session.schemaMap.View}" />]
+        </a>
+    </li>
+    <li class="active">
+        <a th:href="@{/indexes}">
+            <img src="images/b_index.png"
+                 th:src="@{images/b_index.png}"
+                 alt="Views"
+                 border="0"/>
+            Indexes[<span th:text="${session.schemaMap.Index}" />]
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/constraints}">
+            <img src="images/constraints.png"
+                 th:src="@{images/constraints.png}"
+                 alt="Constraints"
+                 border="0"/>
+            Constraints[<span th:text="${session.schemaMap.Constraint}" />]
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/query}">
+            <img src="images/b_sql.png"
+                 th:src="@{images/b_sql.png}"
+                 alt="SQL Worksheet"
+                 border="0"/>
+            SQL Worksheet
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/viewconmap}">
+            <img src="images/Connection.gif"
+                 th:src="@{images/Connection.gif}"
+                 alt="View Connections"
+                 border="0"/>
+            Connections
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/endpoints}">
+            <img src="images/s_notice.png"
+                 th:src="@{images/s_notice.png}"
+                 alt="Endpoints"
+                 border="0"/>
+            Endpoints
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/userinfo}">
+            <img src="images/s_info.png"
+                 th:src="@{images/s_info.png}"
+                 alt="Information"
+                 border="0"/>
+            Information
+        </a>
+    </li>
+    <li>
+        <a th:href="@{/variables}">
+            <img src="images/s_vars.png"
+                 th:src="@{images/s_vars.png}"
+                 alt="Database Variables"
+                 border="0"/>
+            Variables
+        </a>
+    </li>
+</ul>
+
+<div class="bs-example" th:if="${result != null}">
+    <br />
+    <div class="col-xs-8">
+        <div th:if="${#strings.contains(result.message, 'ERROR:')}">
+            <div class="alert alert-danger fade in">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <div>
+                    <b>Pivotal MySQL*Web&gt;</b> <span th:text="${result.command}" />
+                </div>
+            </div>
+            <table class="table table-hover table-bordered table-striped table-condensed">
+                <tr class="info">
+                    <td th:text="${result.message}" style="text-align:left} " ></td>
+                </tr>
+            </table>
+        </div>
+        <div th:if="!${#strings.contains(result.message, 'ERROR:')}">
+            <div class="alert alert-success fade in">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <div>
+                    <b>Pivotal MySQL*Web&gt;</b> <span th:text="${result.command}" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bs-example" th:if="${arrayresult != null}">
+    <br />
+    <div class="col-xs-8">
+        <div th:each="result : ${arrayresult}">
+            <div th:if="${#strings.contains(result.message, 'ERROR:')}">
+                <div class="alert alert-danger fade in">
+                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                    <div>
+                        <b>Pivotal MySQL*Web&gt;</b> <span th:text="${result.command}" />
+                    </div>
+                </div>
+                <table class="table table-hover table-bordered table-striped table-condensed">
+                    <tr class="info">
+                        <td style="text-align: right">Message:</td>
+                        <td th:text="${result.message}" style="text-align:left} " ></td>
+                    </tr>
+                </table>
+            </div>
+            <div th:if="!${#strings.contains(result.message, 'ERROR:')}">
+                <div class="alert alert-success fade in">
+                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                    <div>
+                        <b>Pivotal MySQL*Web&gt;</b> <span th:text="${result.command}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-6">
+    <div class="panel-group" id="accordion" th:if="${indexStructure != null}">
+        <br />
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                        <span th:text="${indexname}" /> Index Details
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <table class="table table-hover table-bordered table-condensed">
+                        <thead>
+                        <th style="text-align:center">Column</th>
+                        <th style="text-align:center">Data</th>
+                        </thead>
+                        <tbody>
+                        <div th:each="rows : ${indexStructure.rows}">
+                            <div th:each="columnName : ${indexStructure.columnNames}">
+                                <tr>
+                                    <td style="text-align:right"><span th:text="${columnName}"/></td>
+                                    <td style="text-align:left"><span th:text="${rows.get(columnName)}"/></td>
+                                </tr>
+                            </div>
+                        </div>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clearfix">
+</div>
+
+<div class="bs-example">
+    <br />
+    <form th:action="@{/indexes}" method="post" class="form-horizontal">
+        <div class="form-group ">
+            <div class="col-xs-2">
+                <input type="text" id="search" name="search" placeholder="Index Name" class="form-control" />
+            </div>
+            <div class="col-xs-2">
+                <select id="selectedSchema" name="selectedSchema" class="form-control">
+                    <table>
+                        <tr th:each="schema : ${schemas}">
+                            <div th:if="${schema == chosenSchema}">
+                                <option th:value="${schema}" selected="selected">
+                                    <span th:text="${schema}" />
+                                </option>
+                            </div>
+                            <div th:if="${schema != chosenSchema}">
+                                <option th:value="${schema}">
+                                    <span th:text="${schema}" />
+                                </option>
+                            </div>
+                        </tr>
+                    </table>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <button type="submit" class="btn btn-primary" name="searchpressed" value="searchpressed"><span class="glyphicon glyphicon-search"></span> Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="bs-example" th:if="${estimatedrecords == 0}">
+    <div class="alert alert-info fade in">
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+        <strong>Info!</strong> Found 0 Indexes
+    </div>
+</div>
+
+<!-- Add table with Results only if results exist -->
+<div class="bs-example" th:if="${estimatedrecords > 0}">
+    <div class="alert alert-success fade in col-xs-8">
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+        <strong>Success!</strong> Found <b th:text="${estimatedrecords}"></b> Indexes
+    </div>
+    <div class="col-xs-8">
+        <form th:action="@{/indexes}" method="post" name="tablesForm" id="tablesForm">
+            <input type="hidden" name="selectedSchema" th:value="${chosenSchema}" />
+            <table id="datatable-mysql" class="table table-hover table-bordered table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th colspan="6" style="text-align:center"><b>Indexes</b></th>
+                </tr>
+                <tr>
+                    <th style="text-align:center"></th>
+                    <th style="text-align:center">Catalog</th>
+                    <th style="text-align:center">Schema</th>
+                    <th style="text-align:center">Table Name</th>
+                    <th style="text-align:center">Index Name</th>
+                    <th style="text-align:center">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="index,iterStat : ${indexes}">
+                    <td style="text-align:center;width:5%">
+                        <input type="checkbox"
+                               name="selected_idx[]"
+                               th:value="${index.indexName}"
+                               th:id="'checkbox_tbl_' + ${iterStat.count} + ''" />
+                    </td>
+                    <td th:text="${index.catalog}" style="text-align:center"></td>
+                    <td th:text="${index.schemaName}" style="text-align:center"></td>
+                    <td th:text="${index.tableName}" style="text-align:center"></td>
+                    <td th:text="${index.indexName}" style="text-align:center"></td>
+                    <td style="text-align:center ">
+                        <a th:href="@{/indexes(idxName=${index.indexName},idxAction='DROP',selectedSchema=${chosenSchema},tableName=${index.tableName})}"
+                        th:data1="${index.indexName}"
+                        th:onclick="'return confirmLink(this, \'Drop INDEX ' + this.getAttribute('data1') + '?\')'">
+                            <img src="images/b_drop.png"
+                                 th:src="@{images/b_drop.png}"
+                                 alt="Drop Index"
+                                 width="16" height="16"
+                                 data-toggle="tooltip" title="Drop Index"
+                                 border="0"/>
+                        </a>&nbsp;
+                        <a th:href="@{/indexes(idxName=${index.indexName},tabName=${index.tableName},idxAction='STRUCTURE',selectedSchema=${chosenSchema})}">
+                            <img src="images/b_tblanalyse.png"
+                                 th:src="@{images/b_tblanalyse.png}"
+                                 alt="Index Details"
+                                 width="16" height="16"
+                                 data-toggle="tooltip" title="Index Details"
+                                 border="0"/>
+                        </a>&nbsp;
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+
+
+<div class="clearfix">
+</div>
+
+<div th:include="footer :: copy"></div>
+
+</body>
+</html>

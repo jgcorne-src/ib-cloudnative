@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.pivotal.spring.cloud</groupId>
+  <artifactId>spring-cloud-services-config-client-autoconfigure</artifactId>
+  <version>3.1.5.RELEASE</version>
+  <name>Spring Cloud Services Config Client Autoconfigure</name>
+  <description>Spring Cloud Services Config Client Autoconfigure</description>
+  <url>https://projects.spring.io/spring-cloud/</url>
+  <organization>
+    <name>Pivotal Software, Inc.</name>
+    <url>https://www.spring.io</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>royclarkson</id>
+      <name>Roy Clarkson</name>
+      <email>rclarkson@pivotal.io</email>
+    </developer>
+    <developer>
+      <id>dyroberts</id>
+      <name>Dylan Roberts</name>
+      <email>dyroberts@pivotal.io</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/pivotal-cf/spring-cloud-services-starters.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/pivotal-cf/spring-cloud-services-starters.git</developerConnection>
+    <url>https://github.com/pivotal-cf/spring-cloud-services-starters</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/pivotal-cf/spring-cloud-services-starters/issues</url>
+  </issueManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-config</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.retry</groupId>
+      <artifactId>spring-retry</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-client</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>2.3.1.RELEASE</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>Hoxton.SR6</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.pivotal.cfenv</groupId>
+        <artifactId>java-cfenv</artifactId>
+        <version>2.2.1.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>io.pivotal.spring.cloud</groupId>
+        <artifactId>cloudfoundry-certificate-truster</artifactId>
+        <version>1.0.1.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>io.pivotal.cfenv</groupId>
+        <artifactId>java-cfenv-boot-pivotal-scs</artifactId>
+        <version>2.2.1.RELEASE</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
